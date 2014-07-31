@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "qmi-cli.h"
+#include "qmi-cli-main.h"
 #include "qmi-cli-handler.h"
 
 #define PROGRAM_NAME	"qmi-cli"
