@@ -23,17 +23,17 @@ void display_version(void) {
 
 void display_help(int status) {
 	printf("%s | version %s | %s | %s\n", PROGRAM_NAME,
-										  PROGRAM_VER,
-										  __TIME__,
-										  __DATE__);
+										PROGRAM_VER,
+										__TIME__,
+										__DATE__);
 
 	fprintf(status == EXIT_SUCCESS ? stdout : stderr,
 	"Usage: qmi-cli -i [NVITEM] -a [ACTION|]			\n"
-	"Info : Read/Write NV item through QMI 		  		\n\n"
+	"Info : Read/Write NV item through QMI				\n\n"
 	"  -i, specify the NV item							\n"
 	"  -a, Action you wants 1:Read | 2:Write | 3:Delete	\n"
 	"  -p, payload if op code is 2(write)				\n"
-	"  -h, Display this help and exit 					\n"
+	"  -h, Display this help and exit					\n"
 	"  -v, Output version information and exit			\n"
 	);
 	exit(status);
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef __DEBUG__
 	_dbg("Function works? %s\n", ((int) handler_main(qr) == 1) ? "SUCCESS" : "FAILED");
-	return;
+	return 1;
 #else
 	return (int) handler_main(qr);
 #endif

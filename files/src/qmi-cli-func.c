@@ -26,18 +26,14 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 	qmi_cli_opcode_t rc = QMI_CLI_FAIL;
 	switch (info->op_code) {
 		case QMI_CLI_READ:
-			if ( rc = send_qmi_nv_read( NV_FTM_MODE_I,
-										(uint8_t *)&ftm_mode,
-										sizeof(uint8_t) ) == QMI_CLI_SUCCESS ) {
+			if ( rc = send_qmi_nv_read( NV_FTM_MODE_I, (uint8_t *)&ftm_mode, sizeof(uint8_t) ) == QMI_CLI_SUCCESS ) {
 				_dbg("NV_FTM_MODE_I Read Succeed - %d\n", ftm_mode);
 			}
 		break;
 
 		case QMI_CLI_WRITE:
 			ftm_mode = (uint8_t) atoi ((char *)info->nvdata);
-			if ( rc = send_qmi_nv_write( NV_FTM_MODE_I,
-										 (uint8_t *)&ftm_mode,
-										 sizeof(uint8_t) ) == QMI_CLI_SUCCESS ) {
+			if ( rc = send_qmi_nv_write( NV_FTM_MODE_I, (uint8_t *)&ftm_mode, sizeof(uint8_t) ) == QMI_CLI_SUCCESS ) {
 				_dbg("NV_FTM_MODE_I Write Succeed!\n");
 			}
 			_dbg("ftm_mode is : %d\n", ftm_mode);
