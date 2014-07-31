@@ -16,7 +16,8 @@
 typedef enum {
 	QMI_CLI_FAIL = 0,
 	QMI_CLI_SUCCESS,
-	QMI_CLI_RANGE_FAIL	
+	QMI_CLI_RANGE_FAIL,
+	QMI_CLI_ITEM_NOT_SUPPORT
 } qmi_cli_status_t;
 
 typedef enum {
