@@ -7,19 +7,21 @@ RDEPENDS += "qmi-framework"
 
 PR = "r001"
 
-SRC_URI = "file://build			\
-	   file://src/*			\
-	   file://inc/*			\
-	   file://LICENSE		\
-	   file://CMakeLists.txt	\
-	   "
+SRC_URI = "file://build				\
+		   file://src/*				\
+		   file://inc/*				\
+		   file://LICENSE			\
+		   file://CMakeLists.txt	\
+		  "
 
 S = "${WORKDIR}/build"
 
 inherit cmake
 
 do_configure () {
-	cmake .. -DINC_DIR:PATH=${WORKSPACE} -DLIB_DIR:PATH=${STAGING_LIBDIR}
+	cmake .. -DINC_DIR:PATH=${WORKSPACE}		\
+			 -DLIB_DIR:PATH=${STAGING_LIBDIR}	\
+			 -DCMAKE_BUILD_TYPE=Release
 }
 
 do_compile() {

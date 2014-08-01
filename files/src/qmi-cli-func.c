@@ -29,7 +29,7 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 			if ( rc = send_qmi_nv_read( NV_FTM_MODE_I, (uint8_t *)&ftm_mode, sizeof(uint8_t) ) == QMI_CLI_SUCCESS ) {
 				_dbg("NV_FTM_MODE_I Read Succeed - %d\n", ftm_mode);
 			}
-		break;
+			break;
 
 		case QMI_CLI_WRITE:
 			ftm_mode = (uint8_t) atoi ((char *)info->nvdata);
@@ -37,7 +37,7 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 				_dbg("NV_FTM_MODE_I Write Succeed!\n");
 			}
 			_dbg("ftm_mode is : %d\n", ftm_mode);
-		break;
+			break;
 	}
 
 	_dbg("rc = %d\n", (int) rc);
