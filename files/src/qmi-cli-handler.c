@@ -13,7 +13,6 @@ static qmi_cli_status_t (*func_ptr)(qmi_req *info);
 	Routes the request to corresponding handler
 */
 qmi_cli_status_t handler_main (qmi_req *req_info) {
-	_dbg("handler_main()");
 	_dbg("req_info->nv_item : %d\n", req_info->nv_item);
 	_dbg("req_info->op_code : %d\n", req_info->op_code);
 
@@ -23,6 +22,12 @@ qmi_cli_status_t handler_main (qmi_req *req_info) {
 	switch (req_info->nv_item) {
 		case NV_FTM_MODE_I:
 			func_ptr = qmi_cli_op_func_tbl.nv_ftm_mode_op;
+			break;
+		case NV_PRL_ENABLED_I:
+			func_ptr = qmi_cli_op_func_tbl.nv_prl_enable_op;
+			break;
+		case NV_UE_IMEI_I:
+			func_ptr = qmi_cli_op_func_tbl.nv_ue_imei_op;
 			break;
 		default:
 			rc = QMI_CLI_ITEM_NOT_SUPPORT;

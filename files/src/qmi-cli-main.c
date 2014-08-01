@@ -8,39 +8,39 @@
 #include "qmi-cli-handler.h"
 
 #define PROGRAM_NAME	"qmi-cli"
-#define PROGRAM_VER		"1.0.2"
+#define PROGRAM_VER	"1.0.2"
 
 static qmi_req _qmi_req = {
-	.op_code = -1,
+	.op_code = QMI_CLI_UNKNOWN,
 	.nv_item = -1
 };
 
 /* helper functions */
-void display_version(void) {
+void display_version (void) {
 	printf("%s version %s\n", PROGRAM_NAME, PROGRAM_VER);
 	exit(EXIT_SUCCESS);
 }
 
-void display_help(int status) {
+void display_help (int status) {
 	printf("%s | version %s | %s | %s\n", PROGRAM_NAME,
-										PROGRAM_VER,
-										__TIME__,
-										__DATE__);
+					      PROGRAM_VER,
+					      __TIME__,
+					      __DATE__);
 
 	fprintf(status == EXIT_SUCCESS ? stdout : stderr,
-	"Usage: qmi-cli -i [NVITEM] -a [ACTION|]			\n"
-	"Info : Read/Write NV item through QMI				\n\n"
-	"  -i, specify the NV item							\n"
+	"Usage: qmi-cli -i [NVITEM] -a [ACTION|]		\n"
+	"Info : Read/Write NV item through QMI			\n\n"
+	"  -i, specify the NV item				\n"
 	"  -a, Action you wants 1:Read | 2:Write | 3:Delete	\n"
-	"  -p, payload if op code is 2(write)				\n"
-	"  -h, Display this help and exit					\n"
-	"  -v, Output version information and exit			\n"
+	"  -p, payload if op code is 2(write)			\n"
+	"  -h, Display this help and exit			\n"
+	"  -v, Output version information and exit		\n"
 	);
 	exit(status);
 }
 
 /* entry */
-int main(int argc, char *argv[]) {
+int main (int argc, char *argv[]) {
 	int option = 0;
 	bool err = false;
 	qmi_req *qr = &_qmi_req;
@@ -75,8 +75,9 @@ int main(int argc, char *argv[]) {
 
 	// error conditions
 	err |= (qr->nv_item == -1);
-	err |= (qr->op_code == -1);
-	err |= (qr->op_code == 2 && qr->nvdata[0] == '\0');
+	err |= (qr->op_code == QMI_CLI_UNKNOWN);
+	err |= (qr->op_code == QMI_CLI_WRITE && qr->nvdata[0] == '\0');
+	err |= ((uint8_t) qr->op_code <= 0 || (uint8_t) qr->op_code >= 3);
 
 	if (err) {
 		display_help(EXIT_FAILURE);

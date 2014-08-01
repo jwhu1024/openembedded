@@ -8,7 +8,7 @@
 
 #define __SHORT_FILE__ ((strrchr(__FILE__, '/'))?  strrchr(__FILE__, '/') + 1 : __FILE__)
 #ifdef __DEBUG__
-	#define _dbg(message, ...) printf("[LOG][%s:%d] " message, __SHORT_FILE__, __LINE__, ##__VA_ARGS__)
+	#define _dbg(message, ...) printf("[LOG][%s:%d:%s] " message, __SHORT_FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 #else
 	#define _dbg(message, ...)
 #endif
@@ -23,7 +23,8 @@ typedef enum {
 typedef enum {
 	QMI_CLI_READ	= 1,
 	QMI_CLI_WRITE	= 2,
-	QMI_CLI_DELETE	= 3
+	QMI_CLI_DELETE	= 3,
+	QMI_CLI_UNKNOWN = -1
 } qmi_cli_opcode_t;
 
 typedef struct qmi_req {

@@ -23,11 +23,11 @@ link_directories(
 
 # compiler flags
 add_definitions(-Wall -Wundef
-				-Wstrict-prototypes
-				-Wno-trigraphs
-				-fno-inline
-				-fno-short-enums
-				-fpic)
+		-Wstrict-prototypes
+		-Wno-trigraphs
+		-fno-inline
+		-fno-short-enums
+		-fpic)
 
 # output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "./bin")
