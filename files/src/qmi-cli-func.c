@@ -41,7 +41,7 @@ static qmi_cli_status_t nv_prl_enable_op (qmi_req *info) {
 			qmi_func_ptr = &send_qmi_nv_read;
 			break;
 		case QMI_CLI_WRITE:
-			enabled_type.nam = 0;			
+			enabled_type.nam = 0;
 			enabled_type.enabled = info->nvdata[0];
 			qmi_func_ptr = &send_qmi_nv_write;
 			break;
@@ -62,7 +62,7 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 	
 	qmi_cli_opcode_t rc = QMI_CLI_FAIL;
 	uint8_t ftm_mode = (uint8_t) atoi ((char *)info->nvdata);
-	
+
 	switch (info->op_code) {
 		case QMI_CLI_READ:
 			qmi_func_ptr = &send_qmi_nv_read;
@@ -86,9 +86,11 @@ static qmi_cli_status_t nv_ue_imei_op ( qmi_req *info ) {
 	char imei_ascii[HSU_CFG_SELECTOR_MAX_ESN_IMEI_SIZE+1];
 	if (BR_read_imei(imei_ascii)) {
 		_dbg("IMEI : %s\n", imei_ascii);
+		return QMI_CLI_SUCCESS;
 	}
 
-	return QMI_CLI_SUCCESS;
+	QMI_NV_ReleaseCmdPager();
+	return QMI_CLI_FAIL;
 }
 
 /* helper functions */
@@ -102,7 +104,7 @@ static int BR_read_imei (char *return_buff_ptr) {
 	if (!send_qmi_nv_read(NV_UE_IMEI_I, (uint8_t *)&(nv_item_data.ue_imei), sizeof(nv_item_data.ue_imei))) {
 		return 0;
 	}
-	
+
 	imei_bcd_len = nv_item_data.ue_imei.ue_imei[0];
 
 	if (imei_bcd_len <= (NV_UE_IMEI_SIZE-1)) {
