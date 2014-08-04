@@ -5,6 +5,7 @@
 
 static int BR_read_imei (char *return_buff_ptr);
 static nv_item_type nv_item_data;
+static qmi_cli_status_t rc = QMI_CLI_FAIL;
 
 // pointer to qmi read/write function
 static int (*qmi_func_ptr)(int nvid, uint8_t DataBuffer[], int buffersize);
@@ -20,10 +21,10 @@ static qmi_cli_status_t nv_br_project_op (qmi_req *info);
 	and proceeds NV read/write actions.
 */
 qmi_cli_op_table_t qmi_cli_op_func_tbl = {
-	nv_prl_enable_op,	/* 256-NV_PRL_ENABLED_I					*/
-	nv_ftm_mode_op,		/* 453-NV_FTM_MODE_I					*/
-	nv_ue_imei_op, 		/* 550-NV_UE_IMEI_I						*/
-	nv_br_project_op	/* 5079-NV_UNDP_HSU_PRODSTR_I 			*/
+	nv_prl_enable_op,	/* 256-NV_PRL_ENABLED_I		*/
+	nv_ftm_mode_op,		/* 453-NV_FTM_MODE_I		*/
+	nv_ue_imei_op, 		/* 550-NV_UE_IMEI_I		*/
+	nv_br_project_op	/* 5079-NV_UNDP_HSU_PRODSTR_I	*/
 };
 
 /*
@@ -37,7 +38,7 @@ static qmi_cli_status_t nv_prl_enable_op (qmi_req *info) {
 	nv_enabled_type enabled_type;
 	memset(&enabled_type, 0, sizeof(enabled_type));
 
-	qmi_cli_opcode_t rc = QMI_CLI_FAIL;
+	rc = QMI_CLI_FAIL;
 
 	switch (info->op_code) {
 		case QMI_CLI_READ:
@@ -50,11 +51,11 @@ static qmi_cli_status_t nv_prl_enable_op (qmi_req *info) {
 			break;
 	}
 
-	rc = (*qmi_func_ptr)(info->nv_item,				/* NV_PRL_ENABLED_I */
-						(uint8_t *)&(enabled_type),
-						sizeof(enabled_type));
+	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_PRL_ENABLED_I */
+			     (uint8_t *)&(enabled_type),
+			     sizeof(enabled_type));
 
-	_dbg("enabled : %c, nam : %d, rc = %d\n", enabled_type.enabled, enabled_type.nam,(int) rc);
+	_dbg("enabled : %c, nam : %d, rc = %d\n", enabled_type.enabled, enabled_type.nam, (int) rc);
 	QMI_NV_ReleaseCmdPager();
 	return rc;
 }
@@ -63,7 +64,7 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 	_dbg("info->nv_item : %d\n", info->nv_item);
 	_dbg("info->op_code : %d\n", info->op_code);
 	
-	qmi_cli_opcode_t rc = QMI_CLI_FAIL;
+	rc = QMI_CLI_FAIL;
 	uint8_t ftm_mode = (uint8_t) atoi ((char *)info->nvdata);
 
 	switch (info->op_code) {
@@ -75,9 +76,9 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 			break;
 	}
 
-	rc = (*qmi_func_ptr)(info->nv_item,				/* NV_FTM_MODE_I */
-						(uint8_t *)&ftm_mode,
-						sizeof(uint8_t));
+	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_FTM_MODE_I */
+			     (uint8_t *)&ftm_mode,
+			     sizeof(uint8_t));
 	
 	_dbg("ftm_mode : %d, rc = %d\n", ftm_mode, (int) rc);
 	QMI_NV_ReleaseCmdPager();
@@ -89,15 +90,17 @@ static qmi_cli_status_t nv_ue_imei_op ( qmi_req *info ) {
 	_dbg("info->op_code : %d\n", info->op_code);
 
 	char imei_ascii[HSU_CFG_SELECTOR_MAX_ESN_IMEI_SIZE+1];
-	if (BR_read_imei(imei_ascii)) {
+
+	rc = (qmi_cli_status_t) BR_read_imei (imei_ascii);
+
+	if (rc == QMI_CLI_SUCCESS) {
 		_dbg("IMEI : %s\n", imei_ascii);
-		return QMI_CLI_SUCCESS;
 	} else {
 		_dbg("BR_read_imei failed\n");
 	}
 
 	QMI_NV_ReleaseCmdPager();
-	return QMI_CLI_FAIL;
+	return rc;
 }
 
 static qmi_cli_status_t nv_br_project_op (qmi_req *info) {
@@ -105,18 +108,29 @@ static qmi_cli_status_t nv_br_project_op (qmi_req *info) {
 	_dbg("info->op_code : %d\n", info->op_code);
 
 	memset(nv_item_data.undp_hsu_prodstr, 0, sizeof(nv_item_data.undp_hsu_prodstr ));
-	
-	if (send_qmi_nv_read(info->nv_item,				/* NV_UNDP_HSU_PRODSTR_I */
-						(uint8 *)(nv_item_data.undp_hsu_prodstr),
-						sizeof(nv_item_data.undp_hsu_prodstr))) {
+
+
+	switch (info->op_code) {
+		case QMI_CLI_READ:
+			qmi_func_ptr = &send_qmi_nv_read;
+			break;
+		case QMI_CLI_WRITE:
+			// TBD
+			break;
+	}
+
+	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_UNDP_HSU_PRODSTR_I */
+			     (uint8_t *)&nv_item_data.undp_hsu_prodstr,
+			     sizeof(nv_item_data.undp_hsu_prodstr));
+
+	if (rc == QMI_CLI_SUCCESS) {
 		_dbg("PROJECT : %s\n", nv_item_data.undp_hsu_prodstr);
-		return QMI_CLI_SUCCESS;
 	} else {
 		_dbg("nv_br_project_op failed\n");
 	}
 
 	QMI_NV_ReleaseCmdPager();
-	return QMI_CLI_FAIL;
+	return rc;
 }
 
 

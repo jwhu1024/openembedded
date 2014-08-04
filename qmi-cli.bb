@@ -12,7 +12,7 @@ SRC_URI = "file://build			\
 	   file://inc/*			\
 	   file://LICENSE		\
 	   file://CMakeLists.txt	\
-	  "
+	"
 
 S = "${WORKDIR}/build"
 
@@ -21,7 +21,7 @@ inherit cmake
 do_configure () {
 	cmake .. -DINC_DIR:PATH=${WORKSPACE}		\
 		 -DLIB_DIR:PATH=${STAGING_LIBDIR}	\
-		 -DCMAKE_BUILD_TYPE=Release
+		 -DCMAKE_BUILD_TYPE=Debug
 }
 
 do_compile() {
