@@ -15,6 +15,7 @@ static qmi_cli_status_t (*func_ptr)(qmi_req *info);
 qmi_cli_status_t handler_main (qmi_req *req_info) {
 	_dbg("req_info->nv_item : %d\n", req_info->nv_item);
 	_dbg("req_info->op_code : %d\n", req_info->op_code);
+	_dbg("req_info->nvdata  : %s\n", req_info->nvdata);
 
 	qmi_cli_status_t rc = QMI_CLI_FAIL;
 	func_ptr = NULL;
@@ -31,6 +32,9 @@ qmi_cli_status_t handler_main (qmi_req *req_info) {
 			break;
 		case NV_UNDP_HSU_PRODSTR_I:
 			func_ptr = qmi_cli_op_func_tbl.nv_br_project_op;
+			break;
+		case 1024:
+			func_ptr = qmi_cli_op_func_tbl.nv_test_op;
 			break;
 		default:
 			rc = QMI_CLI_ITEM_NOT_SUPPORT;

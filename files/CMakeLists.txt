@@ -37,6 +37,7 @@ add_executable(qmi-cli
 	./src/qmi-cli-main.c
 	./src/qmi-cli-handler.c
 	./src/qmi-cli-func.c
+	./src/utils.c
 )
 
 # setting library to link

@@ -77,7 +77,7 @@ int main (int argc, char *argv[]) {
 	err |= (qr->nv_item == -1);
 	err |= (qr->op_code == QMI_CLI_UNKNOWN);
 	err |= (qr->op_code == QMI_CLI_WRITE && qr->nvdata[0] == '\0');
-	err |= ((uint8_t) qr->op_code <= 0 || (uint8_t) qr->op_code >= 3);
+	err |= ((uint8_t) qr->op_code < 1 || (uint8_t) qr->op_code > 3);
 
 	if (err) {
 		display_help(EXIT_FAILURE);
