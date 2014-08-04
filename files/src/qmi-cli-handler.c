@@ -29,6 +29,9 @@ qmi_cli_status_t handler_main (qmi_req *req_info) {
 		case NV_UE_IMEI_I:
 			func_ptr = qmi_cli_op_func_tbl.nv_ue_imei_op;
 			break;
+		case NV_UNDP_HSU_PRODSTR_I:
+			func_ptr = qmi_cli_op_func_tbl.nv_br_project_op;
+			break;
 		default:
 			rc = QMI_CLI_ITEM_NOT_SUPPORT;
 			break;
