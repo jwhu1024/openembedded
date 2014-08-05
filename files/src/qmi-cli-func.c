@@ -42,15 +42,13 @@ static qmi_cli_status_t nv_test_op (qmi_req *info) {
 }
 
 static qmi_cli_status_t nv_pref_mode_op (qmi_req *info) {
-	nv_item_data.pref_mode.mode = 1;
 	rc = QMI_CLI_FAIL;
-
 	switch (info->op_code) {
 		case QMI_CLI_READ:
 			qmi_func_ptr = &send_qmi_nv_read;
 			break;
 		case QMI_CLI_WRITE:
-			nv_item_data.pref_mode.mode = (nv_mode_enum_type) atoi (info->nvdata);
+			nv_item_data.pref_mode.mode = (nv_mode_enum_type) atoi ((char *)info->nvdata);
 			qmi_func_ptr = &send_qmi_nv_write;
 			break;
 	}
@@ -77,8 +75,7 @@ static qmi_cli_status_t nv_prl_enable_op (qmi_req *info) {
 		case QMI_CLI_READ:
 			qmi_func_ptr = &send_qmi_nv_read;
 			break;
-		case QMI_CLI_WRITE:	// not working
-			enabled_type.nam = 0;
+		case QMI_CLI_WRITE:
 			enabled_type.enabled = info->nvdata[0];
 			qmi_func_ptr = &send_qmi_nv_write;
 			break;
