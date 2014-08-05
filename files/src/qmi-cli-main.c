@@ -8,7 +8,7 @@
 #include "qmi-cli-handler.h"
 
 #define PROGRAM_NAME	"qmi-cli"
-#define PROGRAM_VER	"1.0.2"
+#define PROGRAM_VER	"1.0.3"
 
 static qmi_req _qmi_req = {
 	.op_code = QMI_CLI_UNKNOWN,

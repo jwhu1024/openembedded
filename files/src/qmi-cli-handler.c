@@ -33,6 +33,9 @@ qmi_cli_status_t handler_main (qmi_req *req_info) {
 		case NV_UNDP_HSU_PRODSTR_I:
 			func_ptr = qmi_cli_op_func_tbl.nv_br_project_op;
 			break;
+		case NV_PREF_MODE_I:
+			func_ptr = qmi_cli_op_func_tbl.nv_pref_mode_op;
+			break;
 		case 1024:
 			func_ptr = qmi_cli_op_func_tbl.nv_test_op;
 			break;
