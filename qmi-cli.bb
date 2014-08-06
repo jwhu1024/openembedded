@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://../LICENSE;md5=b094a1f3afde551ede1eee992f3ed7e9"
 DEPENDS += "qmi-framework"
 RDEPENDS += "qmi-framework"
 
-PR = "r001"
+PR = "r002"
 
 SRC_URI = "file://build			\
 	   file://src/*			\
@@ -21,7 +21,7 @@ inherit cmake
 do_configure () {
 	cmake .. -DINC_DIR:PATH=${WORKSPACE}		\
 		 -DLIB_DIR:PATH=${STAGING_LIBDIR}	\
-		 -DCMAKE_BUILD_TYPE=Debug
+		 -DCMAKE_BUILD_TYPE=Release
 }
 
 do_compile() {

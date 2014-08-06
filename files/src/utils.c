@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include <stdarg.h>
 #include "utils.h"
 #include "qmi_nv_lib.h"
 
@@ -108,4 +107,3 @@ uint8_t imei_hex_to_ascii(uint8_t buf[], uint8_t imei_ascii[])
 	imei_ascii[15] = '\0';
 	return 0;
 }
-

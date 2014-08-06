@@ -87,7 +87,7 @@ int main (int argc, char *argv[]) {
 	_dbg("Function works? %s\n", ((int) handler_main(qr) == 1) ? "SUCCESS" : "FAILED");
 	return 1;
 #else
-	return (int) handler_main(qr);
+	return (int) handler_main (qr);
 #endif
 
 }

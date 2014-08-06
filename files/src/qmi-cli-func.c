@@ -53,7 +53,8 @@ static qmi_cli_status_t nv_pref_mode_op (qmi_req *info) {
 			break;
 	}
 
-	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_PREF_MODE_I */
+	/* NV_PREF_MODE_I */
+	rc = (*qmi_func_ptr)(info->nv_item,
 			     (uint8_t *)&(nv_item_data.pref_mode),
 			     sizeof(nv_item_data.pref_mode));
 
@@ -81,7 +82,8 @@ static qmi_cli_status_t nv_prl_enable_op (qmi_req *info) {
 			break;
 	}
 
-	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_PRL_ENABLED_I */
+	/* NV_PRL_ENABLED_I */
+	rc = (*qmi_func_ptr)(info->nv_item,
 			     (uint8_t *)&(enabled_type),
 			     sizeof(enabled_type));
 
@@ -106,7 +108,8 @@ static qmi_cli_status_t nv_ftm_mode_op (qmi_req *info) {
 			break;
 	}
 
-	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_FTM_MODE_I */
+	/* NV_FTM_MODE_I */
+	rc = (*qmi_func_ptr)(info->nv_item,
 			     (uint8_t *)&ftm_mode,
 			     sizeof(uint8_t));
 	
@@ -169,7 +172,8 @@ static qmi_cli_status_t nv_br_project_op (qmi_req *info) {
 			break;
 	}
 
-	rc = (*qmi_func_ptr)(info->nv_item,			/* NV_UNDP_HSU_PRODSTR_I */
+	/* NV_UNDP_HSU_PRODSTR_I */
+	rc = (*qmi_func_ptr)(info->nv_item,
 			     (uint8_t *)&nv_item_data.undp_hsu_prodstr,
 			     sizeof(nv_item_data.undp_hsu_prodstr));
 
