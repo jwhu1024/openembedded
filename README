@@ -1,2 +1,13 @@
 More information please refer to below link:
 http://www.yoctoproject.org/docs/1.6/kernel-dev/kernel-dev.html
+
+- This simple kernel module have been tested on mdm9635 codebase.
+	- insert module - modprobe kmodule-test (after login)
+	- remove module - modprobe -r kmodule-test
+	- see the log message - dmesg output such as below
+
+---------------------------------------------------------
+root@mdm9635:/# dmesg
+[   74.845031] ----------Kernel Module Test Init---------
+[   81.121203] ----------Kernel Module Test Exit---------
+---------------------------------------------------------
