@@ -5,7 +5,7 @@ SECTION = "kernel/modules"
 PRIORITY = "optional"
 LICENSE = "BandRich Proprietary license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
-PR = "r3"
+PR = "r4"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
@@ -17,7 +17,7 @@ SRC_URI = "			\
 "
 
 S = "${WORKDIR}"
-KMODULE_NAME = "gpio-trigger"
+KMODULE_NAME = "kmodule-test"
 
 do_compile () {
 	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS CC LD CPP
@@ -34,5 +34,6 @@ do_install () {
 	install -m 0644 ${S}/kmodule_test*${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
 }
 
+#FILES_${PN} += "${base_libdir}"
 FILES_${PN} += "\
     ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/kmodule_test.ko"
