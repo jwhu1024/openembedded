@@ -34,6 +34,5 @@ do_install () {
 	install -m 0644 ${S}/kmodule_test*${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
 }
 
-#FILES_${PN} += "${base_libdir}"
 FILES_${PN} += "\
     ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/kmodule_test.ko"
