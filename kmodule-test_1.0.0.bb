@@ -35,4 +35,4 @@ do_install () {
 }
 
 FILES_${PN} += "\
-    ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/kmodule_test.ko"
+    ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/${KMODULE_NAME}.ko"
