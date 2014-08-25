@@ -9,11 +9,11 @@ PR = "r1"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
-SRC_URI = "					\
+SRC_URI = "			\
 	file://gpio-trigger.c	\
 	file://gpio-trigger.h	\
-	file://Makefile			\
-	file://COPYING			\
+	file://Makefile		\
+	file://COPYING		\
 "
 
 S = "${WORKDIR}"
