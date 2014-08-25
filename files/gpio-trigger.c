@@ -25,13 +25,15 @@ short int irq_any_gpio = 0;
 /* IRQ handler - fired on interrupt											*/
 /****************************************************************************/
 static irqreturn_t gpio_irq_handler (int irq, void *dev_id, struct pt_regs *regs) {
+	int val = -1;
 	unsigned long flags;
 
 	// disable hard interrupts (remember them in flag 'flags')
 	local_irq_save(flags);
 
-	printk(KERN_NOTICE "Interrupt [%d] for device %s was triggered !\n",
-			irq, (char *) dev_id);
+	val = gpio_get_value(GPIO_ANY_GPIO);
+	printk(KERN_NOTICE "Interrupt [%d] for device %s was triggered ! (%d)\n",
+			irq, (char *) dev_id, val);
 
 	// restore hard interrupts
 	local_irq_restore(flags);
