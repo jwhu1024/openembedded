@@ -4,14 +4,14 @@
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
 
-#define DRIVER_AUTHOR	"Lester Hu <lester_hu@bandrich.com>"
-#define DRIVER_DESC		"GPIO Interrupt Test"
+#define DRIVER_AUTHOR			"Lester Hu <lester_hu@bandrich.com>"
+#define DRIVER_DESC			"GPIO Interrupt Test"
 
 // use pin 85 on mdm9x30 (fastboot)
-#define GPIO_ANY_GPIO				85
+#define GPIO_ANY_GPIO			85
 
 // text below will be seen in 'cat /proc/interrupt' command
-#define GPIO_ANY_GPIO_DESC			"Some gpio pin description"
+#define GPIO_ANY_GPIO_DESC		"Some gpio pin description"
 
 // below is optional
 #define GPIO_ANY_GPIO_DEVICE_DESC 	"some_device"
@@ -24,7 +24,7 @@ short int irq_any_gpio = 0;
 /****************************************************************************/
 /* IRQ handler - fired on interrupt											*/
 /****************************************************************************/
-static irqreturn_t gpio_irq_handler(int irq, void *dev_id, struct pt_regs *regs) {
+static irqreturn_t gpio_irq_handler (int irq, void *dev_id, struct pt_regs *regs) {
 	unsigned long flags;
 
 	// disable hard interrupts (remember them in flag 'flags')
@@ -41,7 +41,7 @@ static irqreturn_t gpio_irq_handler(int irq, void *dev_id, struct pt_regs *regs)
 /****************************************************************************/
 /* This function configures interrupts.										*/
 /****************************************************************************/
-void gpio_int_config(void) {
+void gpio_int_config (void) {
 
 	if (gpio_is_valid(GPIO_ANY_GPIO)) {
 		if (gpio_request(GPIO_ANY_GPIO, GPIO_ANY_GPIO_DESC)) {
@@ -58,21 +58,20 @@ void gpio_int_config(void) {
 	printk(KERN_NOTICE "Mapped int %d\n", irq_any_gpio);
 
 	if (request_irq(irq_any_gpio,
-					(irq_handler_t ) gpio_irq_handler,
-					IRQF_TRIGGER_FALLING,
-					GPIO_ANY_GPIO_DESC,
-					GPIO_ANY_GPIO_DEVICE_DESC)) {
+			(irq_handler_t ) gpio_irq_handler,
+			IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING,
+			GPIO_ANY_GPIO_DESC,
+			GPIO_ANY_GPIO_DEVICE_DESC)) {
 		printk("Irq Request failure\n");
 		return;
 	}
-
 	return;
 }
 
 /****************************************************************************/
 /* This function releases interrupts.										*/
 /****************************************************************************/
-void gpio_int_release(void) {
+void gpio_int_release (void) {
 	free_irq(irq_any_gpio, GPIO_ANY_GPIO_DEVICE_DESC);
 	gpio_free(GPIO_ANY_GPIO);
 	return;
@@ -81,13 +80,13 @@ void gpio_int_release(void) {
 /****************************************************************************/
 /* Module init / cleanup block.												*/
 /****************************************************************************/
-int gpio_init(void) {
+int gpio_init (void) {
 	printk(KERN_NOTICE "Hello !\n");
 	gpio_int_config();
 	return 0;
 }
 
-void gpio_cleanup(void) {
+void gpio_cleanup (void) {
 	printk(KERN_NOTICE "Goodbye\n");
 	gpio_int_release();
 	return;
