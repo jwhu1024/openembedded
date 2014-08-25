@@ -1,5 +1,5 @@
 inherit linux-kernel-base module
-DESCRIPTION = "Receipe for gpio-trigger"
+DESCRIPTION = "Recipe for gpio-trigger"
 HOMEPAGE = "http://www.bandrich.com/"
 SECTION = "kernel/modules"
 PRIORITY = "optional"
