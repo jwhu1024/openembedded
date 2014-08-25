@@ -1,23 +1,23 @@
 inherit linux-kernel-base module
-DESCRIPTION = "Kernel Module Development Test"
+DESCRIPTION = "Receipe for gpio-trigger"
 HOMEPAGE = "http://www.bandrich.com/"
 SECTION = "kernel/modules"
 PRIORITY = "optional"
 LICENSE = "BandRich Proprietary license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
-PR = "r4"
+PR = "r1"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
-SRC_URI = "			\
-	file://kmodule_test.c	\
-	file://kmodule_test.h	\
-	file://Makefile		\
-	file://COPYING		\
+SRC_URI = "					\
+	file://gpio-trigger.c	\
+	file://gpio-trigger.h	\
+	file://Makefile			\
+	file://COPYING			\
 "
 
 S = "${WORKDIR}"
-KMODULE_NAME = "kmodule-test"
+KMODULE_NAME = "gpio-trigger"
 
 do_compile () {
 	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS CC LD CPP
@@ -31,8 +31,8 @@ do_compile () {
 
 do_install () {
 	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
-	install -m 0644 ${S}/kmodule_test*${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
+	install -m 0644 ${S}/${KMODULE_NAME}*${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
 }
 
 FILES_${PN} += "\
-    ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/${KMODULE_NAME}.ko"
+	${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/${KMODULE_NAME}.ko"

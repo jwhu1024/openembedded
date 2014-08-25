@@ -1,6 +1,6 @@
 EXTRA_CFLAGS+=	-Wno-declaration-after-statement
 
-MODULES	= kmodule_test
+MODULES	= gpio-trigger
 
 default:	all
 
@@ -17,5 +17,3 @@ clean::
 $(MODULES:%=%.ko):	*.c *.h
 	$(MAKE) -C $(KERNEL_SOURCE) ARCH=$(ARCH) \
 		SUBDIRS=$(CURDIR) CC=${CC}  modules
-
-
