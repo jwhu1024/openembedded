@@ -1,10 +1,24 @@
 More information please refer to below link:
-http://morethanuser.blogspot.tw/2013/04/raspbery-pi-gpio-interrupts-in-kernel.html
+- http://morethanuser.blogspot.tw/2013/04/raspbery-pi-gpio-interrupts-in-kernel.html
+- http://jeshwanth.wordpress.com/2012/06/21/my-first-kernel-module-with-sysfs-class-attribute/
 
 - This kernel module have been tested on mdm9635 codebase and use pin85 to trigger handler.
 	- insert module - modprobe gpio-trigger (after login)
 	- remove module - modprobe -r gpio-trigger
-	- see the log message - dmesg output such as below
+	- communication by using sysfs -
+		- set pid to kernel - echo 1234 > /sys/class/gpio-trigger/pid
+		- get pid from kernel - cat /sys/class/gpio-trigger/pid
+		- sample output as below:
+---------------------------------------------------------
+root@mdm9635:/sys/class/gpio-trigger# cat pid
+65535
+root@mdm9635:/sys/class/gpio-trigger# echo 1234 > pid
+[  612.676384] pid = 1234
+root@mdm9635:/sys/class/gpio-trigger# cat pid
+1234
+---------------------------------------------------------
+
+	- To see the log message of interrupt - output such as below
 
 ---------------------------------------------------------
 root@mdm9635:~# dmesg

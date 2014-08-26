@@ -5,7 +5,7 @@ SECTION = "kernel/modules"
 PRIORITY = "optional"
 LICENSE = "BandRich Proprietary license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
-PR = "r1"
+PR = "r3"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
