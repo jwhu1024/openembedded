@@ -65,9 +65,9 @@ static void send_signal_to_usr (int _val) {
 	return;
 }
 
-/************************************************/
-/* Into this function when gpio85 press/release	*/
-/************************************************/
+/*************************************************************/
+/* Into this function when gpio85 press/release	(bottom-half)*/
+/*************************************************************/
 void btn_press_handler (unsigned long data) {
 	printk("btn_press_handler.\n");
 	printk("current_irq : %d\n", current_irq);
@@ -94,7 +94,7 @@ void btn_press_handler (unsigned long data) {
 DECLARE_TASKLET(tsklt, btn_press_handler, 0);
 
 /************************************************/
-/* IRQ handler - fired on interrupt		*/
+/* IRQ handler - fired on interrupt (top-half)	*/
 /************************************************/
 static irqreturn_t gpio_irq_handler(int irq, void *dev_id) {
 	printk("IRQ number is %d\n", irq);
