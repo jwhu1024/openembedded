@@ -49,6 +49,12 @@ do_install () {
 	install -m 755 ${S}/gpio-trigger.init ${D}${sysconfdir}/init.d/gpio-trigger
 }
 
+pkg_postinst () {
+	[ -n "$D" ] && OPT="-r $D" || OPT="-s"
+	update-rc.d $OPT -f ${INITSCRIPT_NAME} remove
+	update-rc.d $OPT ${INITSCRIPT_NAME} ${INITSCRIPT_PARAMS}
+}
+
 FILES_${PN} += "\
 	${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/${KMODULE_NAME}.ko"
 
