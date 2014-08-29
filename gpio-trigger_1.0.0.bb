@@ -5,13 +5,14 @@ SECTION = "kernel/modules"
 PRIORITY = "optional"
 LICENSE = "BandRich Proprietary license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
-PR = "r5"
+PR = "r6"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
 SRC_URI = "				\
 	file://gpio-trigger.c		\
 	file://gpio-trigger.h		\
+	file://gpio-trigger.init	\
 	file://gpio-trigger-test.c	\
 	file://Makefile			\
 	file://COPYING			\
@@ -19,6 +20,11 @@ SRC_URI = "				\
 
 S = "${WORKDIR}"
 KMODULE_NAME = "gpio-trigger"
+
+INITSCRIPT_NAME		= "gpio-trigger"
+INITSCRIPT_PARAM	= "start 81 2 3 4 5 . stop 41 0 1 6 ."
+
+inherit update-rc.d
 
 do_compile () {
 	${CC} ${CFLAGS} ${LDFLAGS} -o gpio-trigger-test gpio-trigger-test.c
@@ -38,9 +44,13 @@ do_install () {
 
 	install -d ${D}${bindir}
 	install -m 0755 ${S}/gpio-trigger-test ${D}${bindir}
+
+	install -d ${D}${sysconfdir}/init.d/
+	install -m 755 ${S}/gpio-trigger.init ${D}${sysconfdir}/init.d/gpio-trigger
 }
 
 FILES_${PN} += "\
 	${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/${KMODULE_NAME}.ko"
 
 FILES_${PN} += "${bindir}"
+FILES_${PN} += "${sysconfdir}"
