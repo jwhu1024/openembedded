@@ -5,21 +5,24 @@ SECTION = "kernel/modules"
 PRIORITY = "optional"
 LICENSE = "BandRich Proprietary license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
-PR = "r3"
+PR = "r5"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
-SRC_URI = "			\
-	file://gpio-trigger.c	\
-	file://gpio-trigger.h	\
-	file://Makefile		\
-	file://COPYING		\
+SRC_URI = "				\
+	file://gpio-trigger.c		\
+	file://gpio-trigger.h		\
+	file://gpio-trigger-test.c	\
+	file://Makefile			\
+	file://COPYING			\
 "
 
 S = "${WORKDIR}"
 KMODULE_NAME = "gpio-trigger"
 
 do_compile () {
+	${CC} ${CFLAGS} ${LDFLAGS} -o gpio-trigger-test gpio-trigger-test.c
+
 	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS CC LD CPP
 	oe_runmake 'MODPATH="${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/ecu"' \
 		'KERNEL_SOURCE="${STAGING_KERNEL_DIR}"' \
@@ -32,7 +35,12 @@ do_compile () {
 do_install () {
 	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
 	install -m 0644 ${S}/${KMODULE_NAME}*${KERNEL_OBJECT_SUFFIX} ${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}
+
+	install -d ${D}${bindir}
+	install -m 0755 ${S}/gpio-trigger-test ${D}${bindir}
 }
 
 FILES_${PN} += "\
 	${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/${KMODULE_NAME}/${KMODULE_NAME}.ko"
+
+FILES_${PN} += "${bindir}"

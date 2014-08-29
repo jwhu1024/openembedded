@@ -69,3 +69,28 @@ root@mdm9635:~# cat /proc/interrupts
 432:          0  smp2p_gpio  adsp
 461:        126   msmgpio  Some gpio pin description --> This is the IRQ we registered.
 ---------------------------------------------------------
+
+	- Add send_sig_info to user-space, log as below:
+
+---------------------------------------------------------
+root@mdm9635:/# modprobe gpio-trigger 	-> insert module
+[   37.395933] Hello, gpio-trigger!
+[   37.398172] Mapped interrupt 461
+[   37.401468] sysfs_config !
+root@mdm9635:/# gpio-trigger-test 	-> Running test process in user-space
+[   39.805759] pid = 1071
+[   41.627764] IRQ number is 461
+[   41.629785] btn_press_handler.
+[   41.632793] current_irq : 461
+[   41.635742] irq_any_gpio : 461
+[   41.638784] send_signal_to_usr (0)
+[   41.642174] Ready to Send 0 to process(pid:1071)
+receiveData - button Pressed 		-> button pressed event received in userspace
+[   43.562426] IRQ number is 461
+[   43.564444] btn_press_handler.
+[   43.567453] current_irq : 461
+[   43.570406] irq_any_gpio : 461
+[   43.573449] send_signal_to_usr (1)
+[   43.576826] Ready to Send 1 to process(pid:1071)
+receiveData - button Released		-> button released event received in userspace
+---------------------------------------------------------
