@@ -5,11 +5,12 @@ SECTION = "kernel/modules"
 PRIORITY = "optional"
 LICENSE = "BandRich Proprietary license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
-PR = "r6"
+PR = "r7"
 
 KERNEL_VERSION = "${@get_kernelversion('${STAGING_KERNEL_DIR}')}"
 
 SRC_URI = "				\
+	file://debug.h 			\
 	file://gpio-trigger.c		\
 	file://gpio-trigger.h		\
 	file://gpio-trigger.init	\
@@ -27,7 +28,7 @@ INITSCRIPT_PARAM	= "start 81 2 3 4 5 . stop 41 0 1 6 ."
 inherit update-rc.d
 
 do_compile () {
-	${CC} ${CFLAGS} ${LDFLAGS} -o gpio-trigger-test gpio-trigger-test.c
+	${CC} ${CFLAGS} ${LDFLAGS} -o gpio-trigger-test gpio-trigger-test.c -lpthread
 
 	unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS CC LD CPP
 	oe_runmake 'MODPATH="${D}${base_libdir}/modules/${KERNEL_VERSION}/kernel/drivers/ecu"' \

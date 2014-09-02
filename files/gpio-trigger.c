@@ -9,19 +9,19 @@
 #include <linux/sched.h>
 
 #define DRIVER_AUTHOR			"Lester Hu <lester_hu@bandrich.com>"
-#define DRIVER_DESC			"GPIO Interrupt Test"
+#define DRIVER_DESC			"WPS Key Event Trigger"
 
 // real-time signals are in the range of 33 to 64
-#define SIG_TEST			40
+#define SIG_WPS_TRIGGER			40
 
 // use pin 85 on mdm9x30 (fastboot)
 #define GPIO_ANY_GPIO			85
 
 // text below will be seen in 'cat /proc/interrupt' command
-#define GPIO_ANY_GPIO_DESC		"Some gpio pin description"
+#define GPIO_ANY_GPIO_DESC		"WPS Key Event Trigger"
 
 // below is optional
-#define GPIO_ANY_GPIO_DEVICE_DESC 	"some_device"
+#define GPIO_ANY_GPIO_DEVICE_DESC 	"gpio85"
 
 /************************************************/
 /* Interrupts block				*/
@@ -44,9 +44,9 @@ static void send_signal_to_usr (int _val) {
 	struct task_struct *t;
 	memset(&info, 0, sizeof(struct siginfo));
 
-	info.si_signo	= SIG_TEST;	// custom signal
-	info.si_code	= SI_QUEUE;	// real-time signal
-	info.si_int	= _val;		// assign gpio value
+	info.si_signo	= SIG_WPS_TRIGGER;	// custom signal
+	info.si_code	= SI_QUEUE;		// real-time signal
+	info.si_int	= _val;			// assign gpio value
 
 	rcu_read_lock();
 	t = pid_task(find_pid_ns(pid, &init_pid_ns), PIDTYPE_PID);
@@ -59,7 +59,7 @@ static void send_signal_to_usr (int _val) {
 	rcu_read_unlock();
 
 	//send the signal with data
-	if (send_sig_info(SIG_TEST, &info, t) < 0) {
+	if (send_sig_info(SIG_WPS_TRIGGER, &info, t) < 0) {
 		printk("error sending signal\n");
 	}
 	return;
@@ -139,7 +139,6 @@ void gpio_int_release (void) {
 	free_irq(irq_any_gpio, GPIO_ANY_GPIO_DEVICE_DESC);
 	gpio_free(GPIO_ANY_GPIO);
 	tasklet_kill(&tsklt);
-	printk("Module Unloaded\n");
 	return;
 }
 
