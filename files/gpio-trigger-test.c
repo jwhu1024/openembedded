@@ -66,8 +66,8 @@ void *work_func (void *argu) {
 	return NULL;
 }
 
-int main (int argc, char **argv)
-{
+int main (int argc, char **argv) {
+
 	pthread_t work_thread;
 
 	// 1. send pid to kernel module
@@ -85,15 +85,15 @@ int main (int argc, char **argv)
 	sigaction(SIG_WPS_TRIGGER, &sig, NULL);
 
 	// 2-1. register SIGINT handler
-	struct sigaction sigIntHandler;
-	sigIntHandler.sa_handler = sigint_handler;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	sigaction(SIGINT, &sigIntHandler, NULL);
+	memset(&sig, 0, sizeof(sig));
+	sig.sa_handler = sigint_handler;
+	sigemptyset(&sig.sa_mask);
+	sig.sa_flags = 0;
+	sigaction(SIGINT, &sig, NULL);
 
 	log_info("Event Register Success");
 
-	// 3. create thread to count down the time during key press
+	// 3. create thread to count the time during key press
 	pthread_create(&work_thread, NULL, &work_func, NULL);
 
 	// 4. waiting thread terminate
