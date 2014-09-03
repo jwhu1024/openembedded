@@ -24,7 +24,7 @@ typedef enum {
 
 static BTN_STATE_E current_btn_state 	= BTN_RELEASE;
 static short worker_stop 		= 0;
-static useconds_t worker_delay 		= 200000;			/* microseconds for usleep (0.05 seconds)*/
+static useconds_t worker_delay 		= 200000;			/* microseconds for usleep (0.2 seconds)*/
 static pthread_mutex_t btn_state_lock;
 
 /******************************************
@@ -109,6 +109,7 @@ void * work_func (void *argu) {
 
 		// lock mutex
 		pthread_mutex_lock(&btn_state_lock);
+
 		if (prev_btn_state != current_btn_state) {
 			switch (current_btn_state) {
 				case BTN_PRESS:
@@ -165,9 +166,6 @@ void * work_func (void *argu) {
 int main (int argc, char **argv) {
 	pthread_t work_thread;
 
-	// init mutex
-	pthread_mutex_init(&btn_state_lock, NULL);
-
 	// 1. send pid to kernel module
 	if ( send_pid_to_kmod() == -1 ) {
 		debug("send_pid_to_kmod failed");
@@ -175,6 +173,9 @@ int main (int argc, char **argv) {
 	}
 
 	debug("send_pid_to_kmod Success");
+
+	// init mutex
+	pthread_mutex_init(&btn_state_lock, NULL);
 
 	// 2. register event with SIG_WPS_TRIGGER
 	struct sigaction sig;
