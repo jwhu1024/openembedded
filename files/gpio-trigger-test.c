@@ -11,11 +11,11 @@
 #include <sys/timeb.h>
 #include "debug.h"
 
-#define SIG_WPS_TRIGGER		40				/* define our own signal */
-#define GPIO_SYSFS		"/sys/class/gpio-trigger/pid"	/* define the path that kernel module registered */
-#define SECONDS 		1000				/* 1 seconds */
-#define FIVE_SECONDS 		5 * SECONDS			/* 5 seconds */
-#define TRIGGER_THRESHOLD	FIVE_SECONDS			/* Threshold */
+#define SIG_WPS_TRIGGER			40				/* define our own signal */
+#define GPIO_SYSFS			"/sys/class/gpio-trigger/pid"	/* define the path that kernel module registered */
+#define SECONDS 			1000				/* 1 seconds */
+#define FIVE_SECONDS 			5 * SECONDS			/* 5 seconds */
+#define TRIGGER_THRESHOLD		FIVE_SECONDS			/* Threshold */
 
 typedef enum {
 	BTN_PRESS = 0,
@@ -24,6 +24,7 @@ typedef enum {
 
 static BTN_STATE_E current_btn_state 	= 1;
 static short worker_stop 		= 0;
+static useconds_t worker_delay 		= 200000;			/* microseconds for usleep (0.2 seconds)*/
 
 /******************************************
 * SIGINT handler
@@ -74,7 +75,7 @@ int send_pid_to_kmod () {
 }
 
 /******************************************
-* Get timestamp function
+* Get timestamp
 ******************************************/
 long long get_system_time () {
 	struct timeb t;
@@ -86,6 +87,12 @@ long long get_system_time () {
 * Worker thread
 ******************************************/
 void * work_func (void *argu) {
+
+#ifndef NDEBUG
+	char cmd[128] = {0};
+	system("touch /tmp/gpio.log");
+#endif
+
 	long long start = 0, end = 0, timeuse = 0;
 	static BTN_STATE_E prev_btn_state = BTN_RELEASE;
 
@@ -108,13 +115,20 @@ void * work_func (void *argu) {
 
 		if (start != 0 && end != 0) {
 			timeuse = end - start;
+			debug("Timeuse : %lld", timeuse);
+
 			if (timeuse >= TRIGGER_THRESHOLD) {
 				// do some stuff here [TBD]
-				debug("###### TRIGGER_THRESHOLD Arrived ######");
-			} else {
-				debug("###### Not Arrived TRIGGER_THRESHOLD #####");
+				debug("###### Threshold Arrival ######");
 			}
-			debug("Timeuse : %lld", timeuse);
+
+#ifndef NDEBUG
+			sprintf(cmd, "echo %d >> /tmp/gpio.log", timeuse);
+			system(cmd);
+			memset(cmd, 0, 128);
+#endif
+
+			// reset timers
 			start = end = timeuse = 0;
 		}
 
@@ -122,7 +136,7 @@ void * work_func (void *argu) {
 		prev_btn_state = current_btn_state;
 
 		// sleep 0.20 seconds
-		usleep(200000);
+		usleep(worker_delay);
 	}
 	return NULL;
 }
