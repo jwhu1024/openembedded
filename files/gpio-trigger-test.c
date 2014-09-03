@@ -1,38 +1,53 @@
 #include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <signal.h>
 #include <fcntl.h>
 #include <pthread.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/timeb.h>
 #include "debug.h"
 
-/* define our own signal */
-#define SIG_WPS_TRIGGER		40
+#define SIG_WPS_TRIGGER		40				/* define our own signal */
+#define GPIO_SYSFS		"/sys/class/gpio-trigger/pid"	/* define the path that kernel module registered */
+#define SECONDS 		1000				/* 1 seconds */
+#define FIVE_SECONDS 		5 * SECONDS			/* 5 seconds */
+#define TRIGGER_THRESHOLD	FIVE_SECONDS			/* Threshold */
 
-/* define the path that kernel module registered */
-#define GPIO_SYSFS		"/sys/class/gpio-trigger/pid"
+typedef enum {
+	BTN_PRESS = 0,
+	BTN_RELEASE
+} BTN_STATE_E;
 
-static short btn_state = 1;
-static short worker_stop = 0;
+static BTN_STATE_E current_btn_state 	= 1;
+static short worker_stop 		= 0;
 
+/******************************************
+* SIGINT handler
+******************************************/
 void sigint_handler (int s) {
-	log_info("Caught signal %d\n", s);
+	debug("Caught signal %d\n", s);
 	worker_stop = 1;
 }
 
+/******************************************
+* SIG_WPS_TRIGGER handler
+******************************************/
 void gpio_event_cb (int n, siginfo_t *info, void *unused) {
-	log_info("Button %s\n", (info->si_int == 0) ? "Pressed" : "Released");
-	btn_state = info->si_int;
+	debug("Button %s\n", (info->si_int == 0) ? "Pressed" : "Released");
+	current_btn_state = (BTN_STATE_E) info->si_int;
 }
 
+/******************************************
+* Send PID to kernel module
+******************************************/
 int send_pid_to_kmod () {
-
 	int fd;
 	if ((fd = open (GPIO_SYSFS, O_WRONLY) ) == -1) {
-		log_err("Cannot open output file\n");
+		debug("Cannot open output file\n");
 		return -1;
 	}
 
@@ -58,25 +73,73 @@ int send_pid_to_kmod () {
 	return (bytes_write == -1) ? -1 : 1;
 }
 
-void *work_func (void *argu) {
+/******************************************
+* Get timestamp function
+******************************************/
+long long get_system_time () {
+	struct timeb t;
+	ftime(&t);
+	return 1000 * t.time + t.millitm;
+}
+
+/******************************************
+* Worker thread
+******************************************/
+void * work_func (void *argu) {
+	long long start = 0, end = 0, timeuse = 0;
+	static BTN_STATE_E prev_btn_state = BTN_RELEASE;
+
 	while (worker_stop == 0) {
-		log_info("%d\n", btn_state);
-		sleep(1);
+		debug("prev_btn_state : %d\tcurrent_btn_state : %d", (int) prev_btn_state, (int) current_btn_state);
+
+		if (prev_btn_state != current_btn_state) {
+			// key press
+			if (current_btn_state == BTN_PRESS) {
+				start = get_system_time();
+				debug("start time : %lld", start);
+			}
+
+			// key release
+			if (current_btn_state == BTN_RELEASE) {
+				end = get_system_time();
+				debug("end time : %lld", end);
+			}
+		}
+
+		if (start != 0 && end != 0) {
+			timeuse = end - start;
+			if (timeuse >= TRIGGER_THRESHOLD) {
+				// do some stuff here [TBD]
+				debug("###### TRIGGER_THRESHOLD Arrived ######");
+			} else {
+				debug("###### Not Arrived TRIGGER_THRESHOLD #####");
+			}
+			debug("Timeuse : %lld", timeuse);
+			start = end = timeuse = 0;
+		}
+
+		// store previous state
+		prev_btn_state = current_btn_state;
+
+		// sleep 0.20 seconds
+		usleep(200000);
 	}
 	return NULL;
 }
 
+/******************************************
+* Entry point
+******************************************/
 int main (int argc, char **argv) {
-
 	pthread_t work_thread;
 
 	// 1. send pid to kernel module
 	if ( send_pid_to_kmod() == -1 ) {
-		log_err("send_pid_to_kmod failed");
+		debug("send_pid_to_kmod failed");
 		exit(EXIT_FAILURE);
 	}
 
-	log_info("send_pid_to_kmod Success");
+	debug("send_pid_to_kmod Success");
 
 	// 2. register event with SIG_WPS_TRIGGER
 	struct sigaction sig;
@@ -91,7 +154,7 @@ int main (int argc, char **argv) {
 	sig.sa_flags = 0;
 	sigaction(SIGINT, &sig, NULL);
 
-	log_info("Event Register Success");
+	debug("Event Register Success");
 
 	// 3. create thread to count the time during key press
 	pthread_create(&work_thread, NULL, &work_func, NULL);
@@ -99,6 +162,6 @@ int main (int argc, char **argv) {
 	// 4. waiting thread terminate
 	pthread_join(work_thread, NULL);
 
-	log_info("Process Return");
+	debug("Process Return");
 	return 0;
 }
