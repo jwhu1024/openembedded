@@ -24,7 +24,8 @@ typedef enum {
 
 static BTN_STATE_E current_btn_state 	= BTN_RELEASE;
 static short worker_stop 		= 0;
-static useconds_t worker_delay 		= 200000;			/* microseconds for usleep (0.2 seconds)*/
+static useconds_t worker_delay 		= 200000;			/* microseconds for usleep (0.05 seconds)*/
+static pthread_mutex_t btn_state_lock;
 
 /******************************************
 * SIGINT handler
@@ -39,7 +40,10 @@ void sigint_handler (int s) {
 ******************************************/
 void gpio_event_cb (int n, siginfo_t *info, void *unused) {
 	debug("Button %s\n", (info->si_int == 0) ? "Pressed" : "Released");
+
+	pthread_mutex_lock(&btn_state_lock);
 	current_btn_state = (BTN_STATE_E) info->si_int;
+	pthread_mutex_unlock(&btn_state_lock);
 }
 
 /******************************************
@@ -83,6 +87,10 @@ long long get_system_time () {
 	return 1000 * t.time + t.millitm;
 }
 
+long long get_timeuse (long long start, long long end) {
+	return end - start;
+}
+
 /******************************************
 * Worker thread
 ******************************************/
@@ -99,23 +107,37 @@ void * work_func (void *argu) {
 	while (worker_stop == 0) {
 		debug("prev_btn_state : %d\tcurrent_btn_state : %d", (int) prev_btn_state, (int) current_btn_state);
 
+		// lock mutex
+		pthread_mutex_lock(&btn_state_lock);
 		if (prev_btn_state != current_btn_state) {
-			// key press
-			if (current_btn_state == BTN_PRESS) {
-				start = get_system_time();
-				debug("start time : %lld", start);
-			}
-
-			// key release
-			if (current_btn_state == BTN_RELEASE) {
-				end = get_system_time();
-				debug("end time : %lld", end);
+			switch (current_btn_state) {
+				case BTN_PRESS:
+				{
+					start = get_system_time();
+					debug("start time : %lld", start);
+					break;
+				}
+				case BTN_RELEASE:
+				{
+					end = get_system_time();
+					debug("end time : %lld", end);
+					break;
+				}
+				default:
+					debug("Unknown Button State");
+					break;
 			}
 		}
 
+		// store previous state
+		prev_btn_state = current_btn_state;
+
+		// unlock mutex
+		pthread_mutex_unlock(&btn_state_lock);
+
 		if (start != 0 && end != 0) {
-			timeuse = end - start;
-			debug("Timeuse : %lld", timeuse);
+			timeuse = get_timeuse (start, end);
+			debug("\x1B[32mTimeuse : %lld \033[0m", timeuse);
 
 			if (timeuse >= TRIGGER_THRESHOLD) {
 				// do some stuff here [TBD]
@@ -127,13 +149,9 @@ void * work_func (void *argu) {
 			system(cmd);
 			memset(cmd, 0, 128);
 #endif
-
 			// reset timers
 			start = end = timeuse = 0;
 		}
-
-		// store previous state
-		prev_btn_state = current_btn_state;
 
 		// sleep 0.20 seconds
 		usleep(worker_delay);
@@ -146,6 +164,9 @@ void * work_func (void *argu) {
 ******************************************/
 int main (int argc, char **argv) {
 	pthread_t work_thread;
+
+	// init mutex
+	pthread_mutex_init(&btn_state_lock, NULL);
 
 	// 1. send pid to kernel module
 	if ( send_pid_to_kmod() == -1 ) {
@@ -176,6 +197,7 @@ int main (int argc, char **argv) {
 	// 4. waiting thread terminate
 	pthread_join(work_thread, NULL);
 
+	pthread_mutex_destroy(&btn_state_lock);
 	debug("Process Return");
 	return 0;
 }
