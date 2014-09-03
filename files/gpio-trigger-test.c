@@ -22,7 +22,7 @@ typedef enum {
 	BTN_RELEASE
 } BTN_STATE_E;
 
-static BTN_STATE_E current_btn_state 	= 1;
+static BTN_STATE_E current_btn_state 	= BTN_RELEASE;
 static short worker_stop 		= 0;
 static useconds_t worker_delay 		= 200000;			/* microseconds for usleep (0.2 seconds)*/
 
