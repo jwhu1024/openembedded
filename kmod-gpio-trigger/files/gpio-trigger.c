@@ -8,7 +8,7 @@
 #include <linux/rcupdate.h>
 #include <linux/sched.h>
 
-#define DRIVER_AUTHOR			"Lester Hu <lester_hu@bandrich.com>"
+#define DRIVER_AUTHOR			"Lester Hu <jwhu1024@gmail.com>"
 #define DRIVER_DESC			"WPS Key Event Trigger"
 
 // real-time signals are in the range of 33 to 64
