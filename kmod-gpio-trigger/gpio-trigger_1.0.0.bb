@@ -1,9 +1,8 @@
 inherit linux-kernel-base module
 DESCRIPTION = "Recipe for gpio-trigger"
-HOMEPAGE = "http://www.bandrich.com/"
 SECTION = "kernel/modules"
 PRIORITY = "optional"
-LICENSE = "BandRich Proprietary license"
+LICENSE = "MIT license"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7fee3e6baab22bd090666b7895972122"
 PR = "r8"
 
