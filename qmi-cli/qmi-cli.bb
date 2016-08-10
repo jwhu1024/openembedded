@@ -1,5 +1,5 @@
 DESCRIPTION = "QMI command line interface to read/write NV item"
-LICENSE = "BandRich-Proprietary"
+LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=b094a1f3afde551ede1eee992f3ed7e9"
 
 DEPENDS += "qmi-framework"
